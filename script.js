@@ -18,7 +18,12 @@ function toggleDropdown(dropdownId) {
 }
 
 function toggleTheme() {
-    document.body.classList.toggle('night-theme'); // Updated to night-theme
+    const themeSwitch = document.querySelector('.theme-switch');
+    themeSwitch.classList.add('clicked'); // Add class for animation
+    document.body.classList.toggle('night-theme');
+    setTimeout(() => {
+        themeSwitch.classList.remove('clicked'); // Remove after animation
+    }, 500); // Matches animation duration
 }
 
 document.addEventListener('click', function(event) {
