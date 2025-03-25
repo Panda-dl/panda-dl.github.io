@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Dropdown</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <button class="theme-switch" onclick="toggleTheme()">
+        <span class="theme-icon">🌙</span> <!-- Moon for night theme -->
+    </button>
+    <div class="widget-container">
+        <div class="container">
+            <button class="download-btn" onclick="toggleDropdown('minecraftDropdown')">Minecraft</button>
+            <div class="dropdown" id="minecraftDropdown">
+                <a href="Download/minecraft/Nevo_32x.mcpack" class="dropdown-item">Nevo 32x</a>
+                <a href="Download/minecraft/x64.zip" class="dropdown-item">x64</a>
+            </div>
+        </div>
+        <div class="container">
+            <button class="download-btn" onclick="toggleDropdown('optimisationDropdown')">Optimisation</button>
+            <div class="dropdown" id="optimisationDropdown">
+                <a href="Download/opti/app-release.apk" class="dropdown-item">Canta</a>
+                <a href="Download/opti/freez.apk" class="dropdown-item">Ice box (pro)</a>
+                <a href="Download/opti/haber.apk" class="dropdown-item">Haibernater (pro)</a>
+                <a href="Download/opti/swap.apk" class="dropdown-item">Swap (pro)</a>
+            </div>
+        </div>
+        <div class="container">
+            <button class="download-btn" onclick="toggleDropdown('othersDropdown')">Others</button>
+            <div class="dropdown" id="othersDropdown">
+                <a href="Download/oth/apk_editor.apk" class="dropdown-item">Apk Editor</a>
+                <a href="Download/oth/mouse.zip" class="dropdown-item">Mouse Skin</a>
+                <a href="Download/oth/PicsArt_vip.apk" class="dropdown-item">Picsat (pro)</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

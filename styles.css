@@ -1,0 +1,181 @@
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    background: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+    background-size: cover;
+    transition: all 0.8s ease;
+}
+
+body.night-theme {
+    background: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+    background-size: cover;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.theme-switch {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    z-index: 1000; /* Ensure it stays above dropdowns */
+}
+
+.theme-switch:hover {
+    background-color: #555;
+    transform: scale(1.1);
+}
+
+.theme-switch:active {
+    transform: scale(0.95);
+}
+
+.theme-icon {
+    font-size: 20px;
+}
+
+body.night-theme .theme-icon::before {
+    content: "☀️";
+}
+
+.widget-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    justify-content: center;
+    padding: 20px; /* Add padding for mobile edges */
+}
+
+.container {
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    position: relative;
+    width: 150px;
+}
+
+.download-btn {
+    padding: 10px 20px;
+    background-color: #00695C;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.download-btn:hover {
+    background-color: #00796B;
+    transform: scale(1.05);
+}
+
+.download-btn:active {
+    transform: scale(0.95);
+    background-color: #004D40;
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #333333;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto; /* Changed to auto for better mobile scrolling */
+    border: 1px solid #444;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    opacity: 0;
+    transform: scale(0.9);
+    transform-origin: top center;
+    transition: all 0.3s ease;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    box-sizing: border-box;
+    z-index: 900; /* Ensure dropdowns are below theme switch */
+}
+
+.dropdown::-webkit-scrollbar {
+    display: none;
+}
+
+.dropdown.show {
+    display: block;
+    opacity: 1;
+    transform: scale(1);
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.dropdown-item {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #e0e0e0;
+    transition: background-color 0.2s ease;
+    font-size: 16px; /* Larger text for mobile readability */
+}
+
+.dropdown-item:hover {
+    background-color: #444444;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .widget-container {
+        flex-direction: column; /* Stack widgets vertically */
+        align-items: center;
+        padding: 10px;
+    }
+
+    .container {
+        width: 100%; /* Full width on mobile */
+        max-width: 300px; /* Limit max width for readability */
+        margin-bottom: 20px; /* Space between stacked widgets */
+    }
+
+    .download-btn {
+        padding: 15px 20px; /* Larger padding for touch */
+        font-size: 18px; /* Larger text for touch */
+    }
+
+    .dropdown {
+        max-height: 150px; /* Slightly smaller on mobile */
+        width: 100%; /* Ensure it matches container */
+    }
+
+    .dropdown-item {
+        padding: 15px; /* Larger touch area */
+    }
+
+    .theme-switch {
+        width: 50px; /* Larger for touch */
+        height: 50px;
+        top: 15px; /* Adjust position for mobile */
+        right: 15px;
+    }
+
+    .theme-icon {
+        font-size: 24px; /* Larger icon for visibility */
+    }
+}
