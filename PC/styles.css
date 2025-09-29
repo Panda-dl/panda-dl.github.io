@@ -1,0 +1,211 @@
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', Arial, sans-serif; /* Smoother font */
+    background: url('https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.hottystop.com%2Fpenny-lund-first-nude-set-cosmid%2F&psig=AOvVaw3A-1NBP6mBesDOfILsgmil&ust=1746078713041000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCIjY-KiI_4wDFQAAAAAdAAAAABAL') no-repeat center center fixed;
+    background-size: cover;
+    transition: all 0.8s ease;
+}
+
+body.night-theme {
+    background: url('https://ams0.files.sfmlab.com/content/content/image/rastifanedit.jpg?AWSAccessKeyId=YALKTSWDUPLBGUZZ&Signature=ps5EROGtAeaWl6j7m5wBP5yQjmI%3D&Expires=1745529840') no-repeat center center fixed;
+    background-size: cover;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: scale(0.95) translateY(-10px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(180deg); }
+}
+
+.theme-switch {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #444, #222); /* Gradient background */
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.theme-switch:hover {
+    background: linear-gradient(135deg, #666, #333);
+    transform: scale(1.1);
+}
+
+.theme-switch:active {
+    transform: scale(0.95);
+}
+
+.theme-switch.clicked {
+    animation: rotate 0.5s ease forwards; /* Rotation on click */
+}
+
+.theme-icon {
+    font-size: 24px;
+    transition: transform 0.3s ease;
+}
+
+body.night-theme .theme-icon::before {
+    content: "☀️";
+}
+
+.widget-container {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    background: linear-gradient(145deg, rgba(42, 42, 42, 0.9), rgba(20, 20, 20, 0.9)); /* Frosted gradient */
+    backdrop-filter: blur(5px); /* Glass effect */
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    position: relative;
+    width: 160px;
+    transition: transform 0.3s ease;
+}
+
+.container:hover {
+    transform: translateY(-5px); /* Subtle lift on hover */
+}
+
+.download-btn {
+    padding: 12px 20px;
+    background: linear-gradient(90deg, #00695C, #00897B); /* Gradient button */
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.download-btn:hover {
+    background: linear-gradient(90deg, #00796B, #009688);
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.download-btn:active {
+    transform: scale(0.95);
+    background: linear-gradient(90deg, #004D40, #00695C);
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: linear-gradient(145deg, rgba(51, 51, 51, 0.95), rgba(30, 30, 30, 0.95));
+    backdrop-filter: blur(5px);
+    width: 100%;
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid rgba(68, 68, 68, 0.5);
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+    transform-origin: top center;
+    transition: all 0.3s ease;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    box-sizing: border-box;
+    z-index: 900;
+}
+
+.dropdown::-webkit-scrollbar {
+    display: none;
+}
+
+.dropdown.show {
+    display: block;
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.dropdown-item {
+    display: block;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #e0e0e0;
+    font-size: 15px;
+    font-weight: 400;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid rgba(68, 68, 68, 0.2); /* Subtle divider */
+}
+
+.dropdown-item:last-child {
+    border-bottom: none; /* Remove divider from last item */
+}
+
+.dropdown-item:hover {
+    background: rgba(68, 68, 68, 0.8);
+    color: #fff;
+    padding-left: 20px; /* Slight shift on hover */
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .widget-container {
+        flex-direction: column;
+        align-items: center;
+        padding: 15px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 320px;
+        margin-bottom: 25px;
+    }
+
+    .download-btn {
+        padding: 15px 20px;
+        font-size: 18px;
+    }
+
+    .dropdown {
+        max-height: 180px;
+        width: 100%;
+    }
+
+    .dropdown-item {
+        padding: 15px 20px;
+        font-size: 16px;
+    }
+
+    .theme-switch {
+        width: 55px;
+        height: 55px;
+        top: 10px;
+        right: 10px;
+    }
+
+    .theme-icon {
+        font-size: 26px;
+    }
+}

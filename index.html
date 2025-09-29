@@ -1,17 +1,24 @@
-<?php
-/**
- * Front to the WordPress application. This file doesn't do anything, but loads
- * wp-blog-header.php which does and tells WordPress to load the theme.
- *
- * @package WordPress
- */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Device Redirect</title>
+</head>
+<body>
+  <h1>Redirecting...</h1>
+  <script>
+    // Function to detect if the device is mobile
+    function isMobileDevice() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
 
-/**
- * Tells WordPress to load the WordPress theme and output it.
- *
- * @var bool
- */
-define( 'WP_USE_THEMES', true );
-
-/** Loads the WordPress Environment and Template */
-require __DIR__ . '/wp-blog-header.php';
+    // Redirect based on device type
+    if (isMobileDevice()) {
+      window.location.href = "Mobile/index.html";
+    } else {
+      window.location.href = "PC/index.html";
+    }
+  </script>
+</body>
+</html>
