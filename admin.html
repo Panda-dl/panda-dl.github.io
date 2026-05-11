@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PandaDL — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#09090f;
+  --surface:#111118;
+  --surface2:#18181f;
+  --border:#222230;
+  --border2:#32324a;
+  --accent:#6ee7b7;
+  --text:#f0f0f8;
+  --text2:#c8c8e0;
+  --muted:#7070a0;
+  --faint:#404060;
+  --danger:#f87171;
+  --warn:#fb923c;
+}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+  background-size:40px 40px;opacity:0.3;pointer-events:none;z-index:0;
+}
+
+/* LOGIN SCREEN */
+#login-screen{
+  position:fixed;inset:0;z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(9,9,15,0.97);backdrop-filter:blur(8px);
+}
+#login-screen.hidden{display:none;}
+
+.login-box{
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:20px;padding:2.5rem;width:380px;max-width:90vw;
+  animation:popIn 0.3s ease;
+}
+@keyframes popIn{from{opacity:0;transform:scale(0.9) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
+
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:2rem;}
+.login-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,#6ee7b7,#3b82f6);
+  display:flex;align-items:center;justify-content:center;
+}
+.login-icon svg{width:22px;height:22px;fill:white;}
+.login-name{font-size:18px;font-weight:700;letter-spacing:-0.03em;}
+.login-name span{color:var(--accent);}
+
+.login-title{font-size:22px;font-weight:700;letter-spacing:-0.03em;margin-bottom:6px;}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:1.75rem;}
+
+.field-label{font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;display:block;}
+
+.pw-wrap{position:relative;margin-bottom:8px;}
+.pw-input{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:12px 44px 12px 14px;
+  color:var(--text);font-size:14px;font-family:'JetBrains Mono',monospace;
+  outline:none;transition:border-color 0.2s;
+}
+.pw-input:focus{border-color:var(--accent);}
+.pw-input.shake{animation:shake 0.4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}75%{transform:translateX(8px);}}
+
+.pw-toggle{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;color:var(--faint);
+  display:flex;align-items:center;padding:0;
+}
+.pw-toggle svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;}
+
+.token-input{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;
+  color:var(--text);font-size:13px;font-family:'JetBrains Mono',monospace;
+  outline:none;transition:border-color 0.2s;margin-bottom:16px;
+}
+.token-input:focus{border-color:var(--accent);}
+.token-hint{font-size:11px;color:var(--faint);margin-bottom:16px;line-height:1.5;}
+.token-hint a{color:var(--accent);text-decoration:none;}
+
+.err-msg{font-size:12px;color:var(--danger);margin-bottom:12px;min-height:16px;}
+
+.login-btn{
+  width:100%;padding:12px;background:var(--accent);color:#0a1a12;
+  border:none;border-radius:10px;font-size:14px;font-weight:600;
+  font-family:'Sora',sans-serif;cursor:pointer;transition:all 0.15s;letter-spacing:-0.01em;
+}
+.login-btn:hover{background:#34d399;}
+.login-btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+/* MAIN */
+.wrap{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:3rem 2rem;}
+
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:3rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border);}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-icon{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#6ee7b7,#3b82f6);display:flex;align-items:center;justify-content:center;}
+.brand-icon svg{width:20px;height:20px;fill:white;}
+.brand-name{font-size:18px;font-weight:700;letter-spacing:-0.03em;}
+.brand-name span{color:var(--accent);}
+.header-right{display:flex;align-items:center;gap:10px;}
+.admin-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(110,231,183,0.08);border:1px solid rgba(110,231,183,0.2);
+  border-radius:20px;padding:5px 12px;font-size:12px;color:var(--accent);
+  font-family:'JetBrains Mono',monospace;
+}
+.admin-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);}
+.logout-btn{
+  padding:7px 14px;border:1px solid var(--border2);border-radius:8px;
+  background:none;color:var(--muted);font-size:12px;
+  font-family:'Sora',sans-serif;cursor:pointer;transition:all 0.15s;
+}
+.logout-btn:hover{border-color:var(--danger);color:var(--danger);}
+.home-link{
+  display:flex;align-items:center;gap:6px;padding:7px 14px;
+  border:1px solid var(--border2);border-radius:8px;
+  color:var(--muted);font-size:12px;text-decoration:none;transition:all 0.15s;
+}
+.home-link:hover{border-color:var(--accent);color:var(--accent);}
+.home-link svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;}
+
+/* UPLOAD ZONE */
+.upload-zone{
+  border:1.5px dashed var(--border2);border-radius:18px;
+  padding:3rem 2rem;text-align:center;
+  margin-bottom:2rem;cursor:pointer;
+  transition:border-color 0.2s,background 0.2s;
+  background:var(--surface);
+}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--accent);background:rgba(110,231,183,0.03);}
+.upload-icon{
+  width:52px;height:52px;background:var(--surface2);border-radius:14px;
+  display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;
+}
+.upload-icon svg{width:26px;height:26px;stroke:var(--accent);fill:none;stroke-width:1.6;}
+.upload-title{font-size:15px;font-weight:600;color:var(--text2);margin-bottom:4px;}
+.upload-sub{font-size:13px;color:var(--faint);}
+.browse-btn{
+  display:inline-block;margin-top:1rem;padding:9px 22px;
+  background:var(--accent);color:#0a1a12;border-radius:9px;
+  font-size:13px;font-weight:600;cursor:pointer;
+  transition:background 0.15s;border:none;font-family:'Sora',sans-serif;
+}
+.browse-btn:hover{background:#34d399;}
+input[type="file"]{display:none;}
+
+/* PROGRESS */
+.upload-progress{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;
+  display:none;
+}
+.upload-progress.show{display:block;}
+.prog-label{font-size:13px;color:var(--text2);margin-bottom:8px;}
+.prog-bar-wrap{background:var(--surface2);border-radius:4px;height:4px;overflow:hidden;}
+.prog-bar{height:100%;background:var(--accent);border-radius:4px;width:0%;transition:width 0.3s;}
+
+/* SECTION */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
+.section-title{font-size:16px;font-weight:600;color:var(--text2);}
+.file-count-badge{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:20px;padding:3px 10px;font-size:12px;
+  color:var(--muted);font-family:'JetBrains Mono',monospace;
+}
+
+/* FILE LIST */
+.file-list{display:flex;flex-direction:column;gap:8px;}
+.file-row{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:0.9rem 1rem;
+  transition:border-color 0.2s;
+}
+.file-row:hover{border-color:var(--border2);}
+.file-icon2{
+  width:38px;height:38px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;
+}
+.icon-pdf{background:rgba(248,113,113,0.12);color:#f87171;}
+.icon-img{background:rgba(167,139,250,0.12);color:#a78bfa;}
+.icon-doc{background:rgba(96,165,250,0.12);color:#60a5fa;}
+.icon-zip{background:rgba(251,146,60,0.12);color:#fb923c;}
+.icon-other{background:rgba(110,231,183,0.12);color:var(--accent);}
+
+.file-row-name{flex:1;font-size:13px;font-weight:500;color:var(--text2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.file-row-meta{font-size:11px;color:var(--faint);font-family:'JetBrains Mono',monospace;white-space:nowrap;margin-right:12px;}
+.del-btn{
+  padding:7px 10px;background:none;
+  border:1px solid var(--border);border-radius:8px;
+  cursor:pointer;transition:all 0.15s;display:flex;align-items:center;
+}
+.del-btn:hover{background:rgba(248,113,113,0.1);border-color:var(--danger);}
+.del-btn svg{width:14px;height:14px;stroke:var(--faint);fill:none;stroke-width:2;}
+.del-btn:hover svg{stroke:var(--danger);}
+
+/* EMPTY/LOADING */
+.center-msg{text-align:center;padding:3rem;color:var(--faint);}
+.center-msg svg{width:44px;height:44px;stroke:var(--border2);fill:none;stroke-width:1;margin:0 auto 1rem;display:block;}
+.center-msg p{font-size:14px;}
+.spinner{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 1rem;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:2rem;right:2rem;
+  padding:11px 18px;border-radius:10px;font-size:13px;
+  border:1px solid;opacity:0;transform:translateY(10px);
+  transition:all 0.3s;pointer-events:none;z-index:9999;
+}
+.toast.success{background:#0d2b1e;border-color:#6ee7b7;color:#6ee7b7;}
+.toast.error{background:#2b0d0d;border-color:var(--danger);color:var(--danger);}
+.toast.show{opacity:1;transform:translateY(0);}
+
+/* CONFIRM MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(9,9,15,0.85);display:flex;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(4px);}
+.modal-overlay.hidden{display:none;}
+.modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:2rem;width:340px;max-width:90vw;animation:popIn 0.2s ease;}
+.modal-icon-warn{width:44px;height:44px;background:rgba(251,146,60,0.12);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;}
+.modal-icon-warn svg{width:22px;height:22px;stroke:var(--warn);fill:none;stroke-width:1.8;}
+.modal-title{font-size:16px;font-weight:600;color:var(--text2);margin-bottom:6px;}
+.modal-sub{font-size:13px;color:var(--faint);margin-bottom:1.5rem;}
+.modal-actions{display:flex;gap:8px;}
+.modal-confirm{flex:1;padding:10px;background:var(--danger);color:white;border:none;border-radius:9px;font-size:13px;font-weight:600;font-family:'Sora',sans-serif;cursor:pointer;transition:opacity 0.15s;}
+.modal-confirm:hover{opacity:0.85;}
+.modal-cancel-btn{flex:1;padding:10px;background:none;border:1px solid var(--border);border-radius:9px;font-size:13px;color:var(--muted);font-family:'Sora',sans-serif;cursor:pointer;transition:all 0.15s;}
+.modal-cancel-btn:hover{border-color:var(--border2);color:var(--text2);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+      <div class="login-name">Panda<span>DL</span></div>
+    </div>
+    <div class="login-title">Admin Panel</div>
+    <div class="login-sub">Enter your credentials to manage files.</div>
+
+    <label class="field-label">Admin Password</label>
+    <div class="pw-wrap">
+      <input class="pw-input" type="password" id="pw-field" placeholder="Password" autocomplete="off">
+      <button class="pw-toggle" id="pw-toggle" type="button">
+        <svg viewBox="0 0 24 24" id="eye-svg"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+
+    <label class="field-label" style="margin-top:14px;">GitHub Token <span style="color:var(--faint);font-weight:400;">(with repo scope)</span></label>
+    <input class="token-input" type="password" id="token-field" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+    <div class="token-hint">
+      Get a token at <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a> → Generate new token (classic) → check <b style="color:var(--text2)">repo</b> scope.
+    </div>
+
+    <div class="err-msg" id="login-err"></div>
+    <button class="login-btn" id="login-btn">Unlock Admin</button>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="modal-overlay hidden" id="confirm-modal">
+  <div class="modal-box">
+    <div class="modal-icon-warn">
+      <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+    </div>
+    <div class="modal-title">Delete file?</div>
+    <div class="modal-sub" id="confirm-sub">This will permanently remove the file from GitHub.</div>
+    <div class="modal-actions">
+      <button class="modal-confirm" id="confirm-yes">Delete</button>
+      <button class="modal-cancel-btn" id="confirm-no">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="brand-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+      <div class="brand-name">Panda<span>DL</span></div>
+    </div>
+    <div class="header-right">
+      <div class="admin-badge">Admin</div>
+      <a href="index.html" class="home-link">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Public page
+      </a>
+      <button class="logout-btn" id="logout-btn">Logout</button>
+    </div>
+  </header>
+
+  <!-- UPLOAD -->
+  <div class="upload-zone" id="drop-zone">
+    <div class="upload-icon">
+      <svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+    </div>
+    <div class="upload-title">Drop files to upload</div>
+    <div class="upload-sub">Files will be saved directly to your GitHub repository</div>
+    <label for="file-input" class="browse-btn">Browse files</label>
+    <input type="file" id="file-input" multiple>
+  </div>
+
+  <div class="upload-progress" id="upload-progress">
+    <div class="prog-label" id="prog-label">Uploading…</div>
+    <div class="prog-bar-wrap"><div class="prog-bar" id="prog-bar"></div></div>
+  </div>
+
+  <!-- FILE LIST -->
+  <div class="section-header">
+    <div class="section-title">Files in repository</div>
+    <div class="file-count-badge" id="file-count">0 files</div>
+  </div>
+
+  <div class="file-list" id="file-list">
+    <div class="center-msg" id="loading-msg">
+      <div class="spinner"></div>
+      <p>Loading files…</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const OWNER = 'masoomshah1312';
+const REPO = 'download';
+const BRANCH = 'main';
+const FILES_PATH = 'uploads';
+const ADMIN_PASS = 'masoomshah!90!';
+
+let GH_TOKEN = '';
+let allFiles = [];
+let pendingDelete = null;
+
+// ---- TOAST ----
+function toast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ---- LOGIN ----
+const loginScreen = document.getElementById('login-screen');
+const pwField = document.getElementById('pw-field');
+const tokenField = document.getElementById('token-field');
+const loginErr = document.getElementById('login-err');
+
+document.getElementById('pw-toggle').addEventListener('click', () => {
+  pwField.type = pwField.type === 'password' ? 'text' : 'password';
+  document.getElementById('eye-svg').innerHTML = pwField.type === 'text'
+    ? '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'
+    : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+});
+
+document.getElementById('login-btn').addEventListener('click', () => {
+  const pw = pwField.value;
+  const token = tokenField.value.trim();
+  if (pw !== ADMIN_PASS) {
+    loginErr.textContent = 'Incorrect password.';
+    pwField.classList.add('shake');
+    setTimeout(() => pwField.classList.remove('shake'), 400);
+    return;
+  }
+  if (!token || !token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
+    loginErr.textContent = 'Please enter a valid GitHub token (starts with ghp_).';
+    return;
+  }
+  GH_TOKEN = token;
+  loginErr.textContent = '';
+  loginScreen.classList.add('hidden');
+  loadFiles();
+});
+
+pwField.addEventListener('keydown', e => { if(e.key==='Enter') tokenField.focus(); });
+tokenField.addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('login-btn').click(); });
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+  GH_TOKEN = '';
+  pwField.value = '';
+  tokenField.value = '';
+  loginScreen.classList.remove('hidden');
+});
+
+// ---- HELPERS ----
+function getType(name) {
+  const ext = (name.split('.').pop()||'').toLowerCase();
+  if (['pdf'].includes(ext)) return 'pdf';
+  if (['jpg','jpeg','png','gif','svg','webp','bmp','ico'].includes(ext)) return 'img';
+  if (['doc','docx','txt','md','xls','xlsx','ppt','pptx','csv','rtf'].includes(ext)) return 'doc';
+  if (['zip','rar','gz','tar','7z','bz2'].includes(ext)) return 'zip';
+  return 'other';
+}
+function typeLabel(t){return{pdf:'PDF',img:'IMG',doc:'DOC',zip:'ZIP',other:'FILE'}[t];}
+function typeIconClass(t){return{pdf:'icon-pdf',img:'icon-img',doc:'icon-doc',zip:'icon-zip',other:'icon-other'}[t];}
+function formatSize(b){if(!b)return'—';if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB';}
+
+// ---- API ----
+async function ghFetch(path, method='GET', body=null) {
+  const opts = {
+    method,
+    headers: {
+      'Authorization': `token ${GH_TOKEN}`,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json'
+    }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`, opts);
+  return r;
+}
+
+async function loadFiles() {
+  document.getElementById('file-list').innerHTML = '<div class="center-msg"><div class="spinner"></div><p>Loading…</p></div>';
+  try {
+    const r = await ghFetch(`${FILES_PATH}`);
+    if (r.status === 404) {
+      allFiles = [];
+      renderFiles();
+      return;
+    }
+    if (!r.ok) throw new Error('API error ' + r.status);
+    const data = await r.json();
+    allFiles = Array.isArray(data) ? data.filter(f => f.type === 'file') : [];
+    renderFiles();
+  } catch(e) {
+    document.getElementById('file-list').innerHTML = `<div class="center-msg"><p>Error loading files: ${e.message}</p></div>`;
+  }
+}
+
+function renderFiles() {
+  const list = document.getElementById('file-list');
+  document.getElementById('file-count').textContent = allFiles.length + ' file' + (allFiles.length!==1?'s':'');
+  if (allFiles.length === 0) {
+    list.innerHTML = '<div class="center-msg"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>No files yet — upload something above</p></div>';
+    return;
+  }
+  list.innerHTML = allFiles.map(f => {
+    const t = getType(f.name);
+    return `<div class="file-row" id="row-${f.sha}">
+      <div class="file-icon2 ${typeIconClass(t)}">${typeLabel(t)}</div>
+      <div class="file-row-name" title="${f.name}">${f.name}</div>
+      <div class="file-row-meta">${formatSize(f.size)}</div>
+      <a href="${f.download_url}" download="${f.name}" style="display:flex;align-items:center;padding:7px 10px;border:1px solid var(--border);border-radius:8px;color:var(--accent);transition:all 0.15s;margin-right:6px;" title="Download">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/></svg>
+      </a>
+      <button class="del-btn" onclick="confirmDelete('${f.sha}','${f.name.replace(/'/g,"\\'")}','${f.path}')" title="Delete">
+        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+      </button>
+    </div>`;
+  }).join('');
+}
+
+// ---- UPLOAD ----
+async function uploadFiles(fileList) {
+  const files = Array.from(fileList);
+  if (!files.length) return;
+  const prog = document.getElementById('upload-progress');
+  const progBar = document.getElementById('prog-bar');
+  const progLabel = document.getElementById('prog-label');
+  prog.classList.add('show');
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    progLabel.textContent = `Uploading ${file.name} (${i+1}/${files.length})…`;
+    progBar.style.width = ((i / files.length) * 100) + '%';
+    try {
+      const b64 = await toBase64(file);
+      const path = `${FILES_PATH}/${file.name}`;
+
+      // Check if file exists to get SHA for update
+      let sha = undefined;
+      const check = await ghFetch(path);
+      if (check.ok) { const d = await check.json(); sha = d.sha; }
+
+      const body = { message: `Upload ${file.name}`, content: b64, branch: BRANCH };
+      if (sha) body.sha = sha;
+
+      const r = await ghFetch(path, 'PUT', body);
+      if (!r.ok) { const err = await r.json(); throw new Error(err.message); }
+    } catch(e) {
+      toast(`Failed to upload ${file.name}: ${e.message}`, 'error');
+    }
+  }
+
+  progBar.style.width = '100%';
+  progLabel.textContent = 'Done!';
+  setTimeout(() => { prog.classList.remove('show'); progBar.style.width='0%'; }, 1500);
+  toast(`Uploaded ${files.length} file${files.length>1?'s':''}!`);
+  await loadFiles();
+}
+
+function toBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+document.getElementById('file-input').addEventListener('change', e => {
+  if (e.target.files.length) uploadFiles(e.target.files);
+  e.target.value = '';
+});
+
+const dropZone = document.getElementById('drop-zone');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('drag-over');
+  if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
+});
+
+// ---- DELETE ----
+window.confirmDelete = function(sha, name, path) {
+  pendingDelete = { sha, name, path };
+  document.getElementById('confirm-sub').textContent = `"${name}" will be permanently removed from GitHub.`;
+  document.getElementById('confirm-modal').classList.remove('hidden');
+};
+
+document.getElementById('confirm-yes').addEventListener('click', async () => {
+  if (!pendingDelete) return;
+  document.getElementById('confirm-modal').classList.add('hidden');
+  const { sha, name, path } = pendingDelete;
+  pendingDelete = null;
+  try {
+    const r = await ghFetch(path, 'DELETE', {
+      message: `Delete ${name}`,
+      sha: sha,
+      branch: BRANCH
+    });
+    if (!r.ok) { const e = await r.json(); throw new Error(e.message); }
+    toast(`Deleted ${name}`);
+    await loadFiles();
+  } catch(e) {
+    toast(`Failed to delete: ${e.message}`, 'error');
+  }
+});
+
+document.getElementById('confirm-no').addEventListener('click', () => {
+  document.getElementById('confirm-modal').classList.add('hidden');
+  pendingDelete = null;
+});
+
+document.getElementById('confirm-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('confirm-modal')) {
+    document.getElementById('confirm-modal').classList.add('hidden');
+    pendingDelete = null;
+  }
+});
+</script>
+</body>
+</html>
