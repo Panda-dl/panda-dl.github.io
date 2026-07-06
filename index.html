@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Strongbox — your files, filed in git</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #F1ECDE;
+    --paper-raised: #F8F4E9;
+    --ink: #23211C;
+    --ink-soft: #5B5748;
+    --ink-faint: #8B8672;
+    --vault: #1F3A34;
+    --vault-light: #2C5049;
+    --brass: #A9803F;
+    --brass-light: #E4C892;
+    --brass-bg: #F3E6C8;
+    --line: #DCD3B8;
+    --line-strong: #C6BA95;
+    --danger: #8E3B34;
+    --danger-bg: #F1DCD6;
+    --success: #3B6B4E;
+    --success-bg: #DDEBDF;
+    --radius: 6px;
+    --font-display: 'Fraunces', serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    min-height: 100vh;
+  }
+  a { color: inherit; }
+
+  .topbar {
+    background: var(--vault);
+    color: var(--brass-light);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    border-bottom: 3px solid var(--brass);
+  }
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .brand .mark {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 22px;
+    color: #fff;
+    letter-spacing: 0.2px;
+  }
+  .brand .sub {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--brass-light);
+    opacity: 0.75;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 40vw;
+  }
+  .tabs {
+    display: flex;
+    gap: 4px;
+  }
+  .tab-btn {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 14px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--brass-light);
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+  .tab-btn.active {
+    background: var(--vault-light);
+    border-color: var(--brass);
+    color: #fff;
+  }
+  .icon-btn {
+    background: transparent;
+    border: 1px solid var(--brass);
+    color: var(--brass-light);
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .icon-btn:hover { background: var(--vault-light); }
+
+  main {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .hero {
+    margin-bottom: 32px;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 32px;
+    margin: 0 0 6px;
+  }
+  .hero p {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  .ledger-line {
+    height: 1px;
+    background: repeating-linear-gradient(90deg, var(--line-strong) 0, var(--line-strong) 6px, transparent 6px, transparent 12px);
+    margin: 20px 0 28px;
+  }
+
+  .dropzone {
+    border: 2px dashed var(--line-strong);
+    border-radius: 10px;
+    background: var(--paper-raised);
+    padding: 28px 20px;
+    text-align: center;
+    margin-bottom: 32px;
+    transition: border-color .15s, background .15s;
+  }
+  .dropzone.drag {
+    border-color: var(--brass);
+    background: var(--brass-bg);
+  }
+  .dropzone .stamp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border: 2px solid var(--brass);
+    border-radius: 50%;
+    color: var(--brass);
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  .dropzone h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 18px;
+    margin: 0 0 4px;
+  }
+  .dropzone p {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0 0 14px;
+  }
+  .btn {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 14px;
+    padding: 9px 18px;
+    border-radius: var(--radius);
+    border: 1px solid var(--vault);
+    background: var(--vault);
+    color: #fff;
+    cursor: pointer;
+  }
+  .btn:hover { background: var(--vault-light); }
+  .btn.secondary {
+    background: transparent;
+    color: var(--vault);
+    border: 1px solid var(--line-strong);
+  }
+  .btn.secondary:hover { background: var(--paper-raised); }
+  .btn.danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+  }
+  .btn.danger:hover { background: var(--danger-bg); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-sm { font-size: 12px; padding: 6px 12px; }
+
+  .locked-note {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--brass);
+    background: var(--brass-bg);
+    border: 1px solid var(--brass);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    margin-bottom: 24px;
+  }
+
+  .file-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .file-card {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .file-card .fname {
+    font-weight: 600;
+    font-size: 14px;
+    word-break: break-word;
+    line-height: 1.3;
+  }
+  .file-card .fmeta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+  }
+  .file-card .factions {
+    display: flex;
+    gap: 6px;
+    margin-top: auto;
+    padding-top: 8px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-soft);
+  }
+  .empty-state h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 20px;
+    color: var(--ink);
+    margin: 0 0 6px;
+  }
+  .empty-state p { font-size: 14px; margin: 0; }
+
+  .toast-wrap {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 100;
+  }
+  .toast {
+    font-size: 13px;
+    padding: 10px 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line-strong);
+    background: var(--paper-raised);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    max-width: 320px;
+  }
+  .toast.ok { border-color: var(--success); background: var(--success-bg); color: var(--success); }
+  .toast.err { border-color: var(--danger); background: var(--danger-bg); color: var(--danger); }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20,20,15,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 20px;
+  }
+  .modal {
+    background: var(--paper-raised);
+    border-radius: 10px;
+    border: 1px solid var(--line-strong);
+    max-width: 440px;
+    width: 100%;
+    padding: 24px;
+  }
+  .modal h2 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 20px;
+    margin: 0 0 4px;
+  }
+  .modal .modal-sub {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0 0 18px;
+  }
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 5px;
+  }
+  .field input {
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    padding: 9px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    background: #fff;
+    color: var(--ink);
+  }
+  .field input:focus { outline: 2px solid var(--brass); outline-offset: 1px; }
+  .field .hint {
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-top: 4px;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 18px;
+  }
+  .badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: var(--brass-bg);
+    color: var(--brass);
+    border: 1px solid var(--brass);
+  }
+
+  @media (max-width: 520px) {
+    .brand .sub { display: none; }
+    .tabs { gap: 2px; }
+    .tab-btn { padding: 8px 10px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="mark">Strongbox</span>
+    <span class="sub" id="repoLabel">not configured yet</span>
+  </div>
+  <div style="display:flex; align-items:center; gap:10px;">
+    <div class="tabs">
+      <button class="tab-btn active" id="tabVaultBtn" onclick="setView('vault')">Vault</button>
+      <button class="tab-btn" id="tabAdminBtn" onclick="setView('admin')">Admin</button>
+    </div>
+    <button class="icon-btn" title="Settings" onclick="openSettings()">&#9881;</button>
+  </div>
+</div>
+
+<main>
+  <div class="hero">
+    <h1 id="heroTitle">Your vault</h1>
+    <p id="heroSub">Files held in a GitHub repository, ledgered by commit.</p>
+  </div>
+  <div class="ledger-line"></div>
+
+  <div id="lockedNote" class="locked-note" style="display:none;">
+    No repository configured yet. Open settings (top right) and point Strongbox at a GitHub repo to get started.
+  </div>
+
+  <div id="adminUploadZone" style="display:none;">
+    <div class="dropzone" id="dropzone">
+      <div class="stamp">&#8593;</div>
+      <h3>Drop files to file them away</h3>
+      <p id="dropzoneSub">or choose from your device — files under 25 MB upload reliably</p>
+      <input type="file" id="fileInput" multiple style="display:none;" />
+      <button class="btn" onclick="document.getElementById('fileInput').click()">Choose files</button>
+    </div>
+  </div>
+
+  <div id="fileGridWrap">
+    <div class="file-grid" id="fileGrid"></div>
+  </div>
+</main>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<div class="modal-overlay" id="settingsOverlay" style="display:none;">
+  <div class="modal">
+    <h2>Connect a repository</h2>
+    <p class="modal-sub">Strongbox reads and writes files straight to a GitHub repo of your choice, using the GitHub API. Nothing is sent anywhere else.</p>
+    <div class="field">
+      <label for="cfgOwner">GitHub username or org</label>
+      <input id="cfgOwner" placeholder="octocat" />
+    </div>
+    <div class="field">
+      <label for="cfgRepo">Repository name</label>
+      <input id="cfgRepo" placeholder="my-files" />
+      <div class="hint">Create an empty repo first (public or private) if you haven't already.</div>
+    </div>
+    <div class="field">
+      <label for="cfgBranch">Branch</label>
+      <input id="cfgBranch" placeholder="main" />
+    </div>
+    <div class="field">
+      <label for="cfgFolder">Folder inside the repo</label>
+      <input id="cfgFolder" placeholder="files" />
+      <div class="hint">Created automatically on first upload.</div>
+    </div>
+    <div class="field">
+      <label for="cfgToken">Personal access token <span class="badge">admin only</span></label>
+      <input id="cfgToken" type="password" placeholder="ghp_..." />
+      <div class="hint">Needs "Contents: read and write" on this repo. Create one at github.com &rarr; Settings &rarr; Developer settings &rarr; Fine-grained tokens. Stored only in this browser's local storage.</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeSettings()">Cancel</button>
+      <button class="btn" onclick="saveSettings()">Save and connect</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const LS_KEY = 'strongbox_config';
+let state = {
+  config: null,
+  files: [],
+  view: 'vault',
+  loading: false,
+};
+
+function loadConfig() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) { return null; }
+}
+function persistConfig(cfg) {
+  localStorage.setItem(LS_KEY, JSON.stringify(cfg));
+}
+
+function openSettings() {
+  const c = state.config || {};
+  document.getElementById('cfgOwner').value = c.owner || '';
+  document.getElementById('cfgRepo').value = c.repo || '';
+  document.getElementById('cfgBranch').value = c.branch || 'main';
+  document.getElementById('cfgFolder').value = c.folder || 'files';
+  document.getElementById('cfgToken').value = c.token || '';
+  document.getElementById('settingsOverlay').style.display = 'flex';
+}
+function closeSettings() {
+  document.getElementById('settingsOverlay').style.display = 'none';
+}
+function saveSettings() {
+  const owner = document.getElementById('cfgOwner').value.trim();
+  const repo = document.getElementById('cfgRepo').value.trim();
+  const branch = document.getElementById('cfgBranch').value.trim() || 'main';
+  const folder = document.getElementById('cfgFolder').value.trim().replace(/^\/+|\/+$/g, '') || 'files';
+  const token = document.getElementById('cfgToken').value.trim();
+  if (!owner || !repo) {
+    toast('Enter at least a username and repository name.', 'err');
+    return;
+  }
+  state.config = { owner, repo, branch, folder, token };
+  persistConfig(state.config);
+  closeSettings();
+  updateHeader();
+  refreshFiles();
+}
+
+function updateHeader() {
+  const c = state.config;
+  const label = document.getElementById('repoLabel');
+  const locked = document.getElementById('lockedNote');
+  if (!c || !c.owner || !c.repo) {
+    label.textContent = 'not configured yet';
+    locked.style.display = 'block';
+    document.getElementById('fileGridWrap').style.display = 'none';
+    document.getElementById('adminUploadZone').style.display = 'none';
+    return;
+  }
+  label.textContent = c.owner + '/' + c.repo + ' \u00b7 ' + c.branch + ' \u00b7 /' + c.folder;
+  locked.style.display = 'none';
+  document.getElementById('fileGridWrap').style.display = 'block';
+  document.getElementById('adminUploadZone').style.display = (state.view === 'admin') ? 'block' : 'none';
+}
+
+function setView(view) {
+  state.view = view;
+  document.getElementById('tabVaultBtn').classList.toggle('active', view === 'vault');
+  document.getElementById('tabAdminBtn').classList.toggle('active', view === 'admin');
+  document.getElementById('heroTitle').textContent = view === 'vault' ? 'Your vault' : 'Intake desk';
+  document.getElementById('heroSub').textContent = view === 'vault'
+    ? 'Files held in a GitHub repository, ledgered by commit.'
+    : 'Upload, replace, or remove what the vault holds.';
+  updateHeader();
+  renderFiles();
+}
+
+function toast(msg, kind) {
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast ' + (kind || '');
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 5000);
+}
+
+function ghHeaders(needsToken) {
+  const headers = { 'Accept': 'application/vnd.github+json' };
+  if (state.config.token) headers['Authorization'] = 'Bearer ' + state.config.token;
+  else if (needsToken) throw new Error('no-token');
+  return headers;
+}
+
+function apiBase() {
+  const c = state.config;
+  return 'https://api.github.com/repos/' + encodeURIComponent(c.owner) + '/' + encodeURIComponent(c.repo);
+}
+
+async function refreshFiles() {
+  const c = state.config;
+  if (!c || !c.owner || !c.repo) { renderFiles(); return; }
+  state.loading = true;
+  renderFiles();
+  try {
+    const url = apiBase() + '/contents/' + encodeURIComponent(c.folder) + '?ref=' + encodeURIComponent(c.branch);
+    const res = await fetch(url, { headers: ghHeaders(false) });
+    if (res.status === 404) {
+      state.files = [];
+    } else if (!res.ok) {
+      const body = await safeJson(res);
+      throw new Error(describeGhError(res.status, body));
+    } else {
+      const data = await res.json();
+      state.files = Array.isArray(data) ? data.filter(f => f.type === 'file') : [];
+    }
+  } catch (e) {
+    toast(e.message || 'Could not reach GitHub.', 'err');
+    state.files = [];
+  }
+  state.loading = false;
+  renderFiles();
+}
+
+async function safeJson(res) {
+  try { return await res.json(); } catch (e) { return null; }
+}
+
+function describeGhError(status, body) {
+  const msg = body && body.message ? body.message : '';
+  if (status === 401) return 'Your token was rejected. Check it in settings.';
+  if (status === 403 && /rate limit/i.test(msg)) return 'GitHub rate limit reached. Add a token in settings to raise it.';
+  if (status === 403) return 'Access denied by GitHub. Check the token\'s permissions on this repo.';
+  if (status === 404) return 'Repository or path not found. Check the details in settings.';
+  return 'GitHub error: ' + (msg || status);
+}
+
+function formatBytes(n) {
+  if (n < 1024) return n + ' B';
+  if (n < 1024*1024) return (n/1024).toFixed(1) + ' KB';
+  return (n/1024/1024).toFixed(1) + ' MB';
+}
+
+function renderFiles() {
+  const grid = document.getElementById('fileGrid');
+  grid.innerHTML = '';
+  const c = state.config;
+  if (!c || !c.owner || !c.repo) return;
+
+  if (state.loading) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><h3>Reading the ledger&hellip;</h3><p>Fetching the file list from GitHub.</p></div>';
+    return;
+  }
+  if (state.files.length === 0) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><h3>The vault is empty</h3><p>' +
+      (state.view === 'admin' ? 'Drop a file above to start filing.' : 'Nothing has been filed here yet.') +
+      '</p></div>';
+    return;
+  }
+  state.files
+    .slice()
+    .sort((a,b) => a.name.localeCompare(b.name))
+    .forEach(f => {
+      const card = document.createElement('div');
+      card.className = 'file-card';
+      card.innerHTML =
+        '<div class="fname">' + escapeHtml(f.name) + '</div>' +
+        '<div class="fmeta">' + formatBytes(f.size) + ' &middot; ' + f.sha.slice(0,7) + '</div>' +
+        '<div class="factions">' +
+          '<button class="btn secondary btn-sm" onclick="downloadFile(\'' + encodeURIComponent(f.path) + '\', \'' + escapeAttr(f.name) + '\')">Download</button>' +
+          (state.view === 'admin' ? '<button class="btn danger btn-sm" onclick="deleteFile(\'' + encodeURIComponent(f.path) + '\', \'' + f.sha + '\', \'' + escapeAttr(f.name) + '\')">Delete</button>' : '') +
+        '</div>';
+      grid.appendChild(card);
+    });
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
+
+async function downloadFile(encodedPath, name) {
+  try {
+    const c = state.config;
+    const path = decodeURIComponent(encodedPath);
+    const url = apiBase() + '/contents/' + path.split('/').map(encodeURIComponent).join('/') + '?ref=' + encodeURIComponent(c.branch);
+    const res = await fetch(url, { headers: ghHeaders(false) });
+    if (!res.ok) throw new Error(describeGhError(res.status, await safeJson(res)));
+    const data = await res.json();
+    const bytes = base64ToBytes(data.content.replace(/\n/g, ''));
+    const blob = new Blob([bytes]);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  } catch (e) {
+    toast(e.message || 'Download failed.', 'err');
+  }
+}
+
+async function deleteFile(encodedPath, sha, name) {
+  if (!state.config.token) { toast('Add a token in settings to delete files.', 'err'); return; }
+  if (!confirm('Remove "' + name + '" from the vault? This deletes it from the repo.')) return;
+  try {
+    const c = state.config;
+    const path = decodeURIComponent(encodedPath);
+    const url = apiBase() + '/contents/' + path.split('/').map(encodeURIComponent).join('/');
+    const res = await fetch(url, {
+      method: 'DELETE',
+      headers: { ...ghHeaders(true), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'Remove ' + name + ' via Strongbox', sha, branch: c.branch })
+    });
+    if (!res.ok) throw new Error(describeGhError(res.status, await safeJson(res)));
+    toast('Removed from vault.', 'ok');
+    refreshFiles();
+  } catch (e) {
+    toast(e.message || 'Delete failed.', 'err');
+  }
+}
+
+function bytesToBase64(bytes) {
+  let binary = '';
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}
+function base64ToBytes(b64) {
+  const binary = atob(b64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+const MAX_BYTES = 25 * 1024 * 1024;
+
+async function uploadFiles(fileList) {
+  if (!state.config.token) { toast('Add a token in settings to upload files.', 'err'); return; }
+  for (const file of fileList) {
+    if (file.size > MAX_BYTES) {
+      toast('"' + file.name + '" is ' + formatBytes(file.size) + ' \u2014 over the 25 MB limit for this vault.', 'err');
+      continue;
+    }
+    try {
+      toast('Filing "' + file.name + '"\u2026');
+      const buf = await file.arrayBuffer();
+      const content = bytesToBase64(new Uint8Array(buf));
+      const c = state.config;
+      const existing = state.files.find(f => f.name === file.name);
+      const path = c.folder + '/' + file.name;
+      const url = apiBase() + '/contents/' + path.split('/').map(encodeURIComponent).join('/');
+      const body = {
+        message: (existing ? 'Update ' : 'Add ') + file.name + ' via Strongbox',
+        content,
+        branch: c.branch
+      };
+      if (existing) body.sha = existing.sha;
+      const res = await fetch(url, {
+        method: 'PUT',
+        headers: { ...ghHeaders(true), 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) throw new Error(describeGhError(res.status, await safeJson(res)));
+      toast('Filed "' + file.name + '".', 'ok');
+    } catch (e) {
+      toast('"' + file.name + '" failed: ' + (e.message || 'unknown error'), 'err');
+    }
+  }
+  refreshFiles();
+}
+
+document.getElementById('fileInput').addEventListener('change', e => {
+  uploadFiles(Array.from(e.target.files));
+  e.target.value = '';
+});
+
+const dz = document.getElementById('dropzone');
+['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => {
+  e.preventDefault(); dz.classList.add('drag');
+}));
+['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => {
+  e.preventDefault(); dz.classList.remove('drag');
+}));
+dz.addEventListener('drop', e => {
+  if (e.dataTransfer.files.length) uploadFiles(Array.from(e.dataTransfer.files));
+});
+
+(function init() {
+  state.config = loadConfig();
+  updateHeader();
+  if (state.config && state.config.owner && state.config.repo) {
+    refreshFiles();
+  } else {
+    setTimeout(openSettings, 300);
+  }
+})();
+</script>
+
+</body>
+</html>
